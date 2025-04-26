@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="header" style="background-color: #0077B6; color: white; padding: 20px 0; margin: 0;">
+<div class="header">
     <div class="text-center">
         <img src="{{ asset('image/logo.png') }}" alt="Logo" width="150" class="mb-3 rounded-circle">
-        <h1 style="font-size: 1.8rem; color: white;">Rumah Makan WATI</h1>
-        <p style="font-size: 1.2rem; color: white;">
+        <h1 style="font-size: 1.8rem;">Rumah Makan WATI</h1>
+        <p style="font-size: 1.2rem;">
             Dusun Terungtum, Desa Patimban<br>
             Kecamatan Pusakanagara<br>
             Kabupaten Subang, Jawa Barat
@@ -13,21 +13,19 @@
     </div>
 </div>
 
-<div class="container-fluid mt-5">
+<div class="container-fluid text-center mt-5">
 
-    <!-- Kategori dan Ikon Keranjang -->
-    <div class="d-flex justify-content-between align-items-center px-3 my-4">
-        <!-- Kategori -->
-        <div class="d-flex kategori-wrapper flex-grow-1">
-            @foreach (['makanan', 'minuman', 'snack', 'kopi'] as $item)
-                <a href="{{ url('/?kategori=' . $item) }}" 
-                   class="btn btn-dark kategori-item"
-                   style="min-width: 150px; text-align: center;">
-                   {{ strtoupper($item) }}
-                </a>
-            @endforeach
-        </div>
-        <!-- Ikon Keranjang -->
+    <!-- Kategori + Keranjang -->
+    <div class="d-flex justify-content-center align-items-center flex-wrap kategori-wrapper mb-4 px-3">
+        @foreach (['makanan', 'minuman', 'snack', 'kopi'] as $item)
+            <a href="{{ url('/?kategori=' . $item) }}" 
+               class="btn btn-dark text-white kategori-item"
+               style="text-decoration: none;">
+               {{ strtoupper($item) }}
+            </a>
+        @endforeach
+
+        <!-- Keranjang -->
         <div class="cart-wrapper">
             <a href="{{ url('/keranjang') }}" class="btn btn-light">
                 <i class="fa-solid fa-cart-plus fa-3x" style="color:rgb(0, 0, 0);"></i>
@@ -45,6 +43,25 @@
             </button>
         </div>
     </form>
+
+    <!-- TULISAN DAN IKON Kategori -->
+    <div class="text-start px-3 mb-3">
+        <h4 class="d-flex align-items-center">
+            <!-- Tampilkan ikon sesuai kategori -->
+            @if ($kategori == 'makanan')
+                <i class="fa-solid fa-utensils text-danger fa-2x"></i>
+            @elseif ($kategori == 'minuman')
+                <i class="fa-solid fa-whiskey-glass text-danger fa-2x"></i>
+            @elseif ($kategori == 'snack')
+                <i class="fa-solid fa-cookie text-danger fa-2x"></i>
+            @elseif ($kategori == 'kopi')
+                <i class="fa-solid fa-mug-hot text-danger fa-2x"></i>
+            @else
+                <i class="fa-solid fa-list text-secondary fa-2x"></i>
+            @endif
+            <span class="ms-3">{{ ucfirst($kategori ?? 'Menu') }}</span>
+        </h4>
+    </div>
 
     <!-- List Menu -->
     <div class="row px-3">
