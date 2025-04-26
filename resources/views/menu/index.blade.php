@@ -37,8 +37,10 @@
     <form method="GET" action="{{ url('/') }}" class="mb-4 px-3">
         <input type="hidden" name="kategori" value="{{ $kategori }}">
         <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Cari Menu" value="{{ $search }}">
-            <button class="btn btn-dark" type="submit">
+            <input type="text" name="search" class="form-control form-control-lg" 
+                   placeholder="Cari Menu" value="{{ $search }}" 
+                   style="font-size: 1.2rem; height: 3rem;">
+            <button class="btn btn-dark" type="submit" style="height: 3rem;">
                 <i class="fas fa-search fa-lg"></i>
             </button>
         </div>
