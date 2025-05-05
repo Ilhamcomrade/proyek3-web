@@ -18,9 +18,12 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            $token = $user->createToken('YourAppName')->plainTextToken; // Buat token
+
             return response()->json([
                 'success' => true,
                 'user' => $user,
+                'token' => $token, // Kirim token ke frontend
                 'message' => 'Login berhasil',
             ]);
         }
@@ -81,6 +84,9 @@ class AuthController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'message' => 'Logout berhasil'
+        ]);
     }
 }

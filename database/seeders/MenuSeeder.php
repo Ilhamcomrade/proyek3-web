@@ -12,9 +12,9 @@ class MenuSeeder extends Seeder
      * Run the database seeds.
      */
 
-     public function run(): void
-     {
-         Menu::insert([
+    public function run(): void
+    {
+        Menu::insert([
             //makanan
             ['nama' => 'Etong ', 'kategori' => 'makanan', 'harga' => 70000, 'gambar' => 'Etong.jpg'],
             ['nama' => 'Abangan', 'kategori' => 'makanan', 'harga' => 70000, 'gambar' => 'Abangan.jpg'],
@@ -85,6 +85,6 @@ class MenuSeeder extends Seeder
             ['nama' => 'Kopi Indocafe', 'kategori' => 'kopi', 'harga' => 3000, 'gambar' => 'Kopi Indocafe.jpg'],
             ['nama' => 'Kopi Kapal Api', 'kategori' => 'kopi', 'harga' => 3000, 'gambar' => 'Kopi Kapal Api.jpg'],
 
-         ]);
-     }
+        ]);
+    }
 }
