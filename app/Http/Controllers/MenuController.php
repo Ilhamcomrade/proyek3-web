@@ -8,25 +8,34 @@ use Illuminate\Http\Request;
 class MenuController extends Controller
 {
     public function index(Request $request)
-    {
-        // Ambil kategori dari request, default 'makanan'
-        $kategori = $request->get('kategori', 'makanan');
+{
+    $kategori = $request->get('kategori');
+    $search = $request->get('search');
 
-        // Ambil keyword pencarian (jika ada)
-        $search = $request->get('search');
+    $query = Menu::query();
 
-        // Query awal berdasarkan kategori
-        $query = Menu::where('kategori', $kategori);
-
-        // Jika ada pencarian, tambahkan kondisi LIKE
-        if ($search) {
-            $query->where('nama', 'like', "%{$search}%");
-        }
-
-        // Ambil hasil akhir dari query
-        $menus = $query->get();
-
-        // Kirim ke view
-        return view('menu.index', compact('menus', 'kategori', 'search'));
+    if ($search) {
+        $query->where('nama', 'like', "%{$search}%");
     }
+
+    if (!$search && $kategori) {
+        $query->where('kategori', $kategori);
+    }
+
+    $menus = $query->get();
+
+    // Tentukan kategori dari hasil pencarian
+    if ($search && $menus->count() > 0) {
+        $kategoriUnik = $menus->pluck('kategori')->unique();
+
+        if ($kategoriUnik->count() === 1) {
+            $kategori = $kategoriUnik->first(); // misal hanya 'minuman'
+        } else {
+            $kategori = null; // campuran kategori
+        }
+    }
+
+    return view('menu.index', compact('menus', 'kategori', 'search'));
+}
+
 }

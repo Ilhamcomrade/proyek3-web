@@ -35,35 +35,36 @@
 
     <!-- Form Pencarian -->
     <form method="GET" action="{{ url('/') }}" class="mb-4 px-3">
-        <input type="hidden" name="kategori" value="{{ $kategori }}">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control form-control-lg" 
-                   placeholder="Cari Menu" value="{{ $search }}" 
-                   style="font-size: 1.2rem; height: 3rem;">
-            <button class="btn btn-dark" type="submit" style="height: 3rem;">
-                <i class="fas fa-search fa-lg"></i>
-            </button>
-        </div>
-    </form>
-
-    <!-- TULISAN DAN IKON Kategori -->
-    <div class="text-start px-3 mb-3">
-        <h4 class="d-flex align-items-center">
-            <!-- Tampilkan ikon sesuai kategori -->
-            @if ($kategori == 'makanan')
-                <i class="fa-solid fa-utensils text-danger fa-2x"></i>
-            @elseif ($kategori == 'minuman')
-                <i class="fa-solid fa-whiskey-glass text-danger fa-2x"></i>
-            @elseif ($kategori == 'snack')
-                <i class="fa-solid fa-cookie text-danger fa-2x"></i>
-            @elseif ($kategori == 'kopi')
-                <i class="fa-solid fa-mug-hot text-danger fa-2x"></i>
-            @else
-                <i class="fa-solid fa-list text-secondary fa-2x"></i>
-            @endif
-            <span class="ms-3">{{ ucfirst($kategori ?? 'Menu') }}</span>
-        </h4>
+    <div class="input-group">
+        <input type="text" name="search" class="form-control form-control-lg" 
+               placeholder="Cari Menu" value="{{ $search }}" 
+               style="font-size: 1.2rem; height: 3rem;">
+        <button class="btn btn-dark" type="submit" style="height: 3rem;">
+            <i class="fas fa-search fa-lg"></i>
+        </button>
     </div>
+</form>
+
+<!-- TULISAN DAN IKON Kategori -->
+<div class="text-start px-3 mb-3">
+    <h4 class="d-flex align-items-center">
+        @if ($kategori == 'makanan')
+            <i class="fa-solid fa-utensils text-danger fa-2x"></i>
+        @elseif ($kategori == 'minuman')
+            <i class="fa-solid fa-whiskey-glass text-danger fa-2x"></i>
+        @elseif ($kategori == 'snack')
+            <i class="fa-solid fa-cookie text-danger fa-2x"></i>
+        @elseif ($kategori == 'kopi')
+            <i class="fa-solid fa-mug-hot text-danger fa-2x"></i>
+        @else
+            <i class="fa-solid fa-list text-secondary fa-2x"></i>
+        @endif
+        <span class="ms-3">
+            {{ $kategori ? ucfirst($kategori) : ($search ? 'Hasil Pencarian' : 'Semua Menu') }}
+        </span>
+    </h4>
+</div>
+
 
     <!-- List Menu -->
     <div class="row px-3">
