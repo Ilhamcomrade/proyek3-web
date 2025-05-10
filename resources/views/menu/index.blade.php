@@ -18,8 +18,9 @@
     <!-- Kategori + Keranjang -->
     <div class="d-flex justify-content-center align-items-center flex-wrap kategori-wrapper mb-4 px-3">
         @foreach (['makanan', 'minuman', 'snack', 'kopi'] as $item)
-            <a href="{{ url('/?kategori=' . $item) }}" 
+            <a href="javascript:void(0)" 
                class="btn btn-dark text-white kategori-item"
+               data-kategori="{{ $item }}"
                style="text-decoration: none;">
                {{ strtoupper($item) }}
             </a>
@@ -34,54 +35,119 @@
     </div>
 
     <!-- Form Pencarian -->
-    <form method="GET" action="{{ url('/') }}" class="mb-4 px-3">
-    <div class="input-group">
-        <input type="text" name="search" class="form-control form-control-lg" 
-               placeholder="Cari Menu" value="{{ $search }}" 
-               style="font-size: 1.2rem; height: 3rem;">
-        <button class="btn btn-dark" type="submit" style="height: 3rem;">
-            <i class="fas fa-search fa-lg"></i>
-        </button>
+    <form id="search-form" class="mb-4 px-3">
+        <div class="input-group">
+            <input type="text" id="search-input" class="form-control form-control-lg" 
+                   placeholder="Cari Menu" 
+                   style="font-size: 1.2rem; height: 3rem;">
+            <button class="btn btn-dark" type="submit" style="height: 3rem;">
+                <i class="fas fa-search fa-lg"></i>
+            </button>
+        </div>
+    </form>
+    
+    <!-- TULISAN DAN IKON Kategori -->
+    <div class="text-start px-3 mb-3">
+        <h4 class="d-flex align-items-center" id="category-title">
+            @if ($kategori == 'makanan')
+                <i class="fa-solid fa-utensils text-danger fa-2x"></i>
+                <span class="ms-3">Makanan</span>
+            @elseif ($kategori == 'minuman')
+                <i class="fa-solid fa-whiskey-glass text-danger fa-2x"></i>
+                <span class="ms-3">Minuman</span>
+            @elseif ($kategori == 'snack')
+                <i class="fa-solid fa-cookie text-danger fa-2x"></i>
+                <span class="ms-3">Snack</span>
+            @elseif ($kategori == 'kopi')
+                <i class="fa-solid fa-mug-hot text-danger fa-2x"></i>
+                <span class="ms-3">Kopi</span>
+            @else
+                <i class="fa-solid fa-utensils text-danger fa-2x"></i>
+                <span class="ms-3">Makanan</span>
+            @endif
+        </h4>
     </div>
-</form>
-
-<!-- TULISAN DAN IKON Kategori -->
-<div class="text-start px-3 mb-3">
-    <h4 class="d-flex align-items-center">
-        @if ($kategori == 'makanan')
-            <i class="fa-solid fa-utensils text-danger fa-2x"></i>
-        @elseif ($kategori == 'minuman')
-            <i class="fa-solid fa-whiskey-glass text-danger fa-2x"></i>
-        @elseif ($kategori == 'snack')
-            <i class="fa-solid fa-cookie text-danger fa-2x"></i>
-        @elseif ($kategori == 'kopi')
-            <i class="fa-solid fa-mug-hot text-danger fa-2x"></i>
-        @else
-            <i class="fa-solid fa-list text-secondary fa-2x"></i>
-        @endif
-        <span class="ms-3">
-            {{ $kategori ? ucfirst($kategori) : ($search ? 'Hasil Pencarian' : 'Semua Menu') }}
-        </span>
-    </h4>
-</div>
-
+    
 
     <!-- List Menu -->
-    <div class="row px-3">
-        @forelse ($menus as $menu)
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="{{ asset('image/' . $menu->gambar) }}" class="card-img-top" alt="{{ $menu->nama }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $menu->nama }}</h5>
-                        <p class="card-text">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                        <button class="btn btn-dark w-100">Pesan</button>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <p class="text-muted">Tidak ada menu yang ditemukan.</p>
-        @endforelse
+    <div class="row px-3" id="menu-container">
+        @include('partials.menu_items', ['menus' => $menus])
     </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    // Variabel untuk menyimpan state
+    let currentCategory = '';
+    let currentSearch = '';
+
+    // Fungsi untuk memuat menu via AJAX
+    function loadMenus() {
+        $.ajax({
+            url: "{{ route('menu.filter') }}",
+            method: "GET",
+            data: {
+                kategori: currentCategory,
+                search: currentSearch
+            },
+            
+            success: function(response) {
+                $('#menu-container').html(response.html);
+                updateCategoryTitle();
+            },
+            error: function() {
+                $('#menu-container').html('<p class="text-danger">Gagal memuat menu. Silakan coba lagi.</p>');
+            }
+        });
+    }
+
+    // Fungsi untuk mengupdate judul kategori
+    function updateCategoryTitle() {
+        let iconClass = 'fa-utensils text-danger';
+        let titleText = 'Makanan';
+
+        if (currentCategory === 'makanan') {
+            iconClass = 'fa-utensils text-danger';
+            titleText = 'Makanan';
+        } else if (currentCategory === 'minuman') {
+            iconClass = 'fa-whiskey-glass text-danger';
+            titleText = 'Minuman';
+        } else if (currentCategory === 'snack') {
+            iconClass = 'fa-cookie text-danger';
+            titleText = 'Snack';
+        } else if (currentCategory === 'kopi') {
+            iconClass = 'fa-mug-hot text-danger';
+            titleText = 'Kopi';
+        } else if (currentSearch) {
+            iconClass = 'fa-search text-danger';
+            titleText = 'Hasil Pencarian';
+        }
+
+        $('#category-title').html(`
+            <i class="fa-solid ${iconClass} fa-2x"></i>
+            <span class="ms-3">${titleText}</span>
+        `);
+    }
+
+    // Event handler untuk kategori
+    $('.kategori-item').click(function() {
+        $('.kategori-item').removeClass('active');
+        $(this).addClass('active');
+        
+        currentCategory = $(this).data('kategori');
+        currentSearch = '';
+        $('#search-input').val('');
+        loadMenus();
+    });
+
+    // Event handler untuk pencarian
+    $('#search-form').submit(function(e) {
+        e.preventDefault();
+        currentSearch = $('#search-input').val().trim();
+        currentCategory = '';
+        $('.kategori-item').removeClass('active');
+        loadMenus();
+    });
+});
+</script>
 @endsection

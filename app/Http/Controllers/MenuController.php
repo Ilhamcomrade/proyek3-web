@@ -46,4 +46,30 @@ class MenuController extends Controller
         return view('menu.index', compact('menus', 'kategori', 'search'));
     }
     
+    public function filter(Request $request)
+{
+    $kategori = $request->input('kategori');
+    $search = $request->input('search');
+    
+    $query = Menu::query();
+    
+    if ($kategori) {
+        $query->where('kategori', $kategori);
+    }
+    
+    if ($search) {
+        $query->where('nama', 'like', '%'.$search.'%');
+    }
+    
+    $menus = $query->get();
+    
+    if ($request->ajax()) {
+        return response()->json([
+            'html' => view('partials.menu_items', compact('menus'))->render()
+        ]);
+    }
+    
+    return view('menu.index', compact('menus', 'kategori', 'search'));
+}
+
 }
