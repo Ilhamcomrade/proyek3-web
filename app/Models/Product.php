@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ class Product extends Model
         'price',
         'stock',
         'image_url',
-        'category_id'
+        'category_id',
     ];
 
     public function category()
@@ -24,3 +25,4 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 }
+

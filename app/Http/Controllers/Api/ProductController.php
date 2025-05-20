@@ -8,10 +8,75 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
-        return response()->json($products);
+        $kategori = $request->get('kategori');
+        $search = $request->get('search');
+
+        $query = Product::query();
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if (!$search && $kategori) {
+            $query->whereHas('category', function ($q) use ($kategori) {
+                $q->where('name', $kategori);
+            });
+        }
+
+        if (!$search && !$kategori) {
+            $kategori = 'makanan';
+            $query->whereHas('category', function ($q) use ($kategori) {
+                $q->where('name', $kategori);
+            });
+        }
+
+        $products = $query->with('category')->get();
+
+        if ($search && $products->count() > 0) {
+            $kategoriUnik = $products->pluck('category.name')->unique();
+
+            $kategori = $kategoriUnik->count() === 1 ? $kategoriUnik->first() : null;
+        }
+
+        return response()->json([
+            'products' => $products,
+            'kategori' => $kategori,
+            'search' => $search,
+        ]);
+    }
+
+    public function filter(Request $request)
+    {
+        $kategori = $request->input('kategori');
+        $search = $request->input('search');
+
+        $query = Product::query();
+
+        if ($kategori) {
+            $query->whereHas('category', function ($q) use ($kategori) {
+                $q->where('name', $kategori);
+            });
+        }
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $products = $query->with('category')->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('partials.product_items', compact('products'))->render()
+            ]);
+        }
+
+        return response()->json([
+            'products' => $products,
+            'kategori' => $kategori,
+            'search' => $search,
+        ]);
     }
 
     public function store(Request $request)
@@ -29,7 +94,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('category')->findOrFail($id);
         return response()->json($product);
     }
 

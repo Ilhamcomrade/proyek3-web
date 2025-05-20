@@ -15,18 +15,23 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Public routes
 Route::post('/login', [AuthController::class, 'index']);
 Route::post('/register', [AuthController::class, 'store']);
 
-// Protected route (kalau nanti pakai sanctum atau auth middleware)
+// ✅ Produk bisa dilihat tanpa login
+Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+
+// Protected route (butuh login)
 Route::middleware('auth:sanctum')->group(function () {
-    // Products
-    Route::apiResource('products', ProductController::class);
+    // Products (hanya create, update, delete yang butuh login)
+    Route::apiResource('products', ProductController::class)->except(['index', 'show']);
+
     // Customers
     Route::apiResource('customers', CustomerController::class);
     // Orders
     Route::apiResource('orders', OrderController::class);
-    // Order Items (kalau butuh)
+    // Order Items
     Route::apiResource('order-items', OrderItemController::class);
     // Payments
     Route::apiResource('payments', PaymentController::class);
@@ -34,6 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     // Expenses
     Route::apiResource('expenses', ExpenseController::class);
-    // Logout (optional)
+    // Logout
     Route::post('/logout', [AuthController::class, 'destroy']);
 });

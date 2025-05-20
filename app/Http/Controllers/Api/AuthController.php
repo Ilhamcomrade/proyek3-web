@@ -84,7 +84,7 @@ class AuthController extends Controller
      */
     public function destroy(string $id)
     {
-        $request->user()->currentAccessToken()->delete();
+        $id->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Logout berhasil'
         ]);

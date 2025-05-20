@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MenuController;
+use App\Http\Controllers\ProductViewController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/', [MenuController::class, 'index'])->name('menu.index');
-Route::get('/menu/filter', [MenuController::class, 'filter'])->name('menu.filter');
+Route::get('/products/filter', [ProductViewController::class, 'filter'])->name('product.filter');
+Route::get('/', [ProductViewController::class, 'index']);

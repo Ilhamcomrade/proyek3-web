@@ -38,7 +38,7 @@
     <form id="search-form" class="mb-4 px-3">
         <div class="input-group">
             <input type="text" id="search-input" class="form-control form-control-lg" 
-                   placeholder="Cari Menu" 
+                   placeholder="Cari Produk" 
                    style="font-size: 1.2rem; height: 3rem;">
             <button class="btn btn-dark" type="submit" style="height: 3rem;">
                 <i class="fas fa-search fa-lg"></i>
@@ -49,59 +49,40 @@
     <!-- TULISAN DAN IKON Kategori -->
     <div class="text-start px-3 mb-3">
         <h4 class="d-flex align-items-center" id="category-title">
-            @if ($kategori == 'makanan')
-                <i class="fa-solid fa-utensils text-danger fa-2x"></i>
-                <span class="ms-3">Makanan</span>
-            @elseif ($kategori == 'minuman')
-                <i class="fa-solid fa-whiskey-glass text-danger fa-2x"></i>
-                <span class="ms-3">Minuman</span>
-            @elseif ($kategori == 'snack')
-                <i class="fa-solid fa-cookie text-danger fa-2x"></i>
-                <span class="ms-3">Snack</span>
-            @elseif ($kategori == 'kopi')
-                <i class="fa-solid fa-mug-hot text-danger fa-2x"></i>
-                <span class="ms-3">Kopi</span>
-            @else
-                <i class="fa-solid fa-utensils text-danger fa-2x"></i>
-                <span class="ms-3">Makanan</span>
-            @endif
+            <i class="fa-solid fa-utensils text-danger fa-2x"></i>
+            <span class="ms-3">Makanan</span>
         </h4>
     </div>
-    
 
-    <!-- List Menu -->
+    <!-- List Produk -->
     <div class="row px-3" id="menu-container">
-        @include('partials.menu_items', ['menus' => $menus])
+        @include('partials.product_items', ['products' => $products])
     </div>
 </div>
 
 <script>
 $(document).ready(function() {
-    // Variabel untuk menyimpan state
     let currentCategory = '';
     let currentSearch = '';
 
-    // Fungsi untuk memuat menu via AJAX
-    function loadMenus() {
+    function loadProducts() {
         $.ajax({
-            url: "{{ route('menu.filter') }}",
+            url: "{{ route('product.filter') }}",
             method: "GET",
             data: {
                 kategori: currentCategory,
                 search: currentSearch
             },
-            
             success: function(response) {
                 $('#menu-container').html(response.html);
                 updateCategoryTitle();
             },
             error: function() {
-                $('#menu-container').html('<p class="text-danger">Gagal memuat menu. Silakan coba lagi.</p>');
+                $('#menu-container').html('<p class="text-danger">Gagal memuat produk. Silakan coba lagi.</p>');
             }
         });
     }
 
-    // Fungsi untuk mengupdate judul kategori
     function updateCategoryTitle() {
         let iconClass = 'fa-utensils text-danger';
         let titleText = 'Makanan';
@@ -123,13 +104,12 @@ $(document).ready(function() {
             titleText = 'Hasil Pencarian';
         }
 
-        $('#category-title').html(`
-            <i class="fa-solid ${iconClass} fa-2x"></i>
-            <span class="ms-3">${titleText}</span>
-        `);
+       $('#category-title').html(`
+    <i class="fa-solid ${iconClass} fa-2x"></i>
+    <span class="ms-3">${titleText}</span>
+`);
     }
 
-    // Event handler untuk kategori
     $('.kategori-item').click(function() {
         $('.kategori-item').removeClass('active');
         $(this).addClass('active');
@@ -137,16 +117,47 @@ $(document).ready(function() {
         currentCategory = $(this).data('kategori');
         currentSearch = '';
         $('#search-input').val('');
-        loadMenus();
+        loadProducts();
     });
 
-    // Event handler untuk pencarian
     $('#search-form').submit(function(e) {
         e.preventDefault();
         currentSearch = $('#search-input').val().trim();
         currentCategory = '';
         $('.kategori-item').removeClass('active');
-        loadMenus();
+        loadProducts();
+    });
+
+    // Event untuk tombol PESAN
+    $(document).on('click', '.btn-pesan', function () {
+        const productId = $(this).data('product-id');
+        const customerId = localStorage.getItem('customer_id');
+
+        if (!customerId) {
+            alert('Customer ID belum diset.');
+            return;
+        }
+
+        $.ajax({
+            url: '/api/cart/add',
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            contentType: 'application/json',
+            data: JSON.stringify({
+                customer_id: customerId,
+                product_id: productId,
+                quantity: 1
+            }),
+            success: function (res) {
+                alert('Produk ditambahkan ke keranjang!');
+            },
+            error: function (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat menambahkan ke keranjang.');
+            }
+        });
     });
 });
 </script>
