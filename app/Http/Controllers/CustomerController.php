@@ -2,45 +2,44 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index()
-    {
-        $customers = Customer::all();
-        return response()->json($customers);
+  
+   public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'table_number' => 'required',
+        'number_customers' => 'required|numeric'
+    ]);
+
+    // Ambil order terakhir tanpa customer_id (order pelanggan yang sedang memesan)
+    $currentOrder = Order::whereNull('customer_id')->orderBy('id', 'desc')->first();
+
+    if (!$currentOrder) {
+        return redirect()->back()->with('error', 'Tidak ada pesanan aktif.');
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'table_number' => 'required|string|max:10',
-            'number_customers' => 'required|string|max:10',
-        ]);
+    // Buat customer baru dengan ID yang sama dengan order_id terbaru
+    $customer = Customer::create([
+        'id' => $currentOrder->id,
+        'name' => $request->name,
+        'table_number' => $request->table_number,
+        'number_customers' => $request->number_customers
+    ]);
 
-        $customer = Customer::create($validated);
-        return response()->json($customer, 201);
-    }
+    // Perbarui order agar memiliki customer_id
+    $currentOrder->update([
+        'customer_id' => $customer->id
+    ]);
 
-    public function show($id)
-    {
-        $customer = Customer::findOrFail($id);
-        return response()->json($customer);
-    }
+    return redirect()->route('keranjang')->with('success', 'Pelanggan berhasil ditambahkan!');
+}
 
-    public function update(Request $request, $id)
-    {
-        $customer = Customer::findOrFail($id);
-        $customer->update($request->all());
-        return response()->json($customer);
-    }
-
-    public function destroy($id)
-    {
-        Customer::destroy($id);
-        return response()->json(null, 204);
-    }
 }

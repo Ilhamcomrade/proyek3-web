@@ -14,39 +14,45 @@
 </div>
 
 <div class="container-fluid text-center mt-5">
-
     <!-- Kategori + Keranjang -->
-    <div class="d-flex justify-content-center align-items-center flex-wrap kategori-wrapper mb-4 px-3">
-        @foreach (['makanan', 'minuman', 'snack', 'kopi'] as $item)
+    <div class="sticky-top bg-light" style="z-index:1020; padding-top: 20px;"> {{-- Tambah padding top --}}
+        <div class="d-flex justify-content-center align-items-center flex-wrap kategori-wrapper mb-4 px-3">
+            @foreach (['makanan', 'minuman', 'snack', 'kopi'] as $item)
             <a href="javascript:void(0)" 
-               class="btn btn-dark text-white kategori-item"
-               data-kategori="{{ $item }}"
-               style="text-decoration: none;">
-               {{ strtoupper($item) }}
+                class="btn btn-dark text-white kategori-item"
+                data-kategori="{{ $item }}"
+                style="text-decoration: none;">
+                {{ strtoupper($item) }}
             </a>
-        @endforeach
+            @endforeach
+            
+            <!-- Keranjang -->
 
-        <!-- Keranjang -->
-        <div class="cart-wrapper">
-            <a href="{{ url('/keranjang') }}" class="btn btn-light">
-                <i class="fa-solid fa-cart-plus fa-3x" style="color:rgb(0, 0, 0);"></i>
-            </a>
-        </div>
-    </div>
+          <div class="cart-wrapper position-relative ms-3">
+    <a href="{{ route('keranjang') }}" class="btn btn-light position-relative">
+        <i class="fa-solid fa-cart-shopping fa-3x" style="color: #000000;"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count" style="display: none;">
+            0
+        </span>
+    </a>
+</div>
 
-    <!-- Form Pencarian -->
-    <form id="search-form" class="mb-4 px-3">
-        <div class="input-group">
-            <input type="text" id="search-input" class="form-control form-control-lg" 
-                   placeholder="Cari Produk" 
-                   style="font-size: 1.2rem; height: 3rem;">
-            <button class="btn btn-dark" type="submit" style="height: 3rem;">
-                <i class="fas fa-search fa-lg"></i>
-            </button>
         </div>
-    </form>
     
-    <!-- TULISAN DAN IKON Kategori -->
+        <!-- Form Pencarian -->
+        <form id="search-form" class="mb-4 px-3">
+            <div class="input-group">
+                <input type="text" id="search-input" class="form-control form-control-lg" 
+                placeholder="Cari Menu" 
+                style="font-size: 1.2rem; height: 3rem;">
+                <button class="btn btn-dark" type="submit" style="height: 3rem;">
+                    <i class="fas fa-search fa-lg"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Kategori -->
     <div class="text-start px-3 mb-3">
         <h4 class="d-flex align-items-center" id="category-title">
             <i class="fa-solid fa-utensils text-danger fa-2x"></i>
@@ -61,27 +67,34 @@
 </div>
 
 <script>
+
 $(document).ready(function() {
     let currentCategory = '';
     let currentSearch = '';
 
-    function loadProducts() {
-        $.ajax({
-            url: "{{ route('product.filter') }}",
-            method: "GET",
-            data: {
-                kategori: currentCategory,
-                search: currentSearch
-            },
-            success: function(response) {
-                $('#menu-container').html(response.html);
-                updateCategoryTitle();
-            },
-            error: function() {
-                $('#menu-container').html('<p class="text-danger">Gagal memuat produk. Silakan coba lagi.</p>');
-            }
-        });
+   function loadProducts() {
+    // Jika pencarian kosong dan tidak ada kategori aktif, set default ke 'makanan'
+    if (!currentSearch && !currentCategory) {
+        currentCategory = 'makanan';
     }
+
+    $.ajax({
+        url: "{{ route('product.filter') }}",
+        method: "GET",
+        data: {
+            kategori: currentCategory,
+            search: currentSearch
+        },
+        success: function(response) {
+            $('#menu-container').html(response.html);
+            updateCategoryTitle();
+        },
+        error: function() {
+            $('#menu-container').html('<p class="text-danger">Gagal memuat produk. Silakan coba lagi.</p>');
+        }
+    });
+}
+
 
     function updateCategoryTitle() {
         let iconClass = 'fa-utensils text-danger';
@@ -120,45 +133,81 @@ $(document).ready(function() {
         loadProducts();
     });
 
-    $('#search-form').submit(function(e) {
-        e.preventDefault();
-        currentSearch = $('#search-input').val().trim();
-        currentCategory = '';
-        $('.kategori-item').removeClass('active');
-        loadProducts();
+    $('#search-input').on('keyup', function() {
+    currentSearch = $(this).val().trim();
+    currentCategory = '';
+    $('.kategori-item').removeClass('active');
+    loadProducts();
+});
+
+$(document).ready(function() {
+    $.get("{{ route('keranjang.add') }}", function(response) {
+        $('.cart-count').text(response.keranjang_count);
     });
+});
 
-    // Event untuk tombol PESAN
-    $(document).on('click', '.btn-pesan', function () {
-        const productId = $(this).data('product-id');
-        const customerId = localStorage.getItem('customer_id');
-
-        if (!customerId) {
-            alert('Customer ID belum diset.');
-            return;
+   $(document).on('click', '.btn-pesan', function() {
+    const productId = $(this).data('product-id');
+    const btn = $(this);
+    
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Memproses...');
+    
+    $.ajax({
+        url: "{{ route('keranjang.add') }}",
+        method: "POST",
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({ product_id: productId }),
+        success: function(response) {
+            $('.cart-count').text(response.keranjang_count);
+            btn.html('PESAN').prop('disabled', false);
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+            btn.html('PESAN').prop('disabled', false);
+            alert('Gagal: ' + (xhr.responseJSON?.message || 'Server error'));
         }
+    });
+});
 
+});
+
+$(document).ready(function() {
+    function updateCartCount() {
         $.ajax({
-            url: '/api/cart/add',
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            url: "{{ route('keranjang.count') }}",
+            method: "GET",
+            success: function(response) {
+                const cartCountElement = $('.cart-count');
+                if (response.keranjang_count > 0) {
+                    cartCountElement.text(response.keranjang_count).show();
+                } else {
+                    cartCountElement.hide(); // Sembunyikan jika kosong
+                }
             },
-            contentType: 'application/json',
-            data: JSON.stringify({
-                customer_id: customerId,
-                product_id: productId,
-                quantity: 1
-            }),
-            success: function (res) {
-                alert('Produk ditambahkan ke keranjang!');
-            },
-            error: function (err) {
-                console.error(err);
-                alert('Terjadi kesalahan saat menambahkan ke keranjang.');
+            error: function() {
+                console.error("Gagal memperbarui notifikasi keranjang");
+            }
+        });
+    }
+
+    updateCartCount(); // Jalankan saat halaman pertama kali dimuat
+
+    $(document).on('click', '.btn-pesan, .btn-minus, .btn-plus, .btn-hapus', function() {
+        const form = $(this).closest('form');
+        $.ajax({
+            url: form.attr('action'),
+            method: form.attr('method'),
+            data: form.serialize(),
+            success: function(response) {
+                updateCartCount(); // Update ikon keranjang setelah perubahan
             }
         });
     });
 });
+
 </script>
 @endsection

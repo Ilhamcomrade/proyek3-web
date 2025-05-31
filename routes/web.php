@@ -2,10 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductViewController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderItemController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/products/filter', [ProductViewController::class, 'filter'])->name('product.filter');
 Route::get('/', [ProductViewController::class, 'index']);
+
+// Perbaikan route filter
+Route::get('/products/filter', [ProductViewController::class, 'filter'])->name('product.filter');
+
+// Perbaikan route keranjang
+Route::post('/keranjang/add', [OrderItemController::class, 'addToKeranjang'])->name('keranjang.add');
+Route::get('/keranjang', [OrderItemController::class, 'index'])->name('keranjang');
+Route::get('/keranjang/count', [OrderItemController::class, 'getCartCount'])->name('keranjang.count');
+
+Route::post('/order-items', [OrderItemController::class, 'store'])->name('order-items.store');
+Route::put('/order-items/{id}', [OrderItemController::class, 'update'])->name('order-items.update');
+Route::delete('/order-items/{id}', [OrderItemController::class, 'destroy'])->name('order-items.destroy');
+
+Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');

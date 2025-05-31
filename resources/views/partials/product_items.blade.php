@@ -5,12 +5,14 @@
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">{{ $product->name }}</h5>
                 <p class="card-text">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                <button class="btn btn-dark mt-auto btn-pesan" data-product-id="{{ $product->id }}">PESAN</button>
+                <button class="btn btn-dark mt-auto btn-pesan" data-product-id="{{ $product->id }}">
+                    PESAN
+                </button>
             </div>
         </div>
     </div>
 @empty
-    <div class="col-12 text-center">
+    <div class="col-12">
         <p class="text-muted">Produk tidak ditemukan.</p>
     </div>
 @endforelse
