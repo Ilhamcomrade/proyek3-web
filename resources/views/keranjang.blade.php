@@ -70,11 +70,11 @@
     @endif
 
     @if(!$orderItems->isEmpty())
-    <form action="{{ route('customers.store') }}" method="POST">
-        @csrf
-        <input type="hidden" name="customer_id" value="{{ $orderIdTerbaru }}">
-
-        <div class="card p-4 bg-white shadow-sm mb-3">
+    
+    <form method="POST" action="{{ route('customer.store') }}">
+    @csrf
+    <input type="hidden" name="order_id" value="{{ $orderIdTerbaru }}">
+   <div class="card p-4 bg-white shadow-sm mb-3">
             <div class="mb-3">
                 <input type="text" name="name" class="form-control" placeholder="Nama" required>
             </div>
@@ -85,13 +85,14 @@
                 <input type="number" name="number_customers" class="form-control" placeholder="Jumlah Pelanggan" required>
             </div>
         </div>
-
+   
         <div class="d-flex justify-content-center mb-5">
             <button type="submit" class="btn btn-success btn-lg">
                 Pesan Sekarang
             </button>
         </div>
-    </form>
+        
+</form>
     @endif
 </div>
 

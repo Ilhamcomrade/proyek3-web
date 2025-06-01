@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderItemController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', [ProductViewController::class, 'index']);
 
@@ -19,4 +20,6 @@ Route::post('/order-items', [OrderItemController::class, 'store'])->name('order-
 Route::put('/order-items/{id}', [OrderItemController::class, 'update'])->name('order-items.update');
 Route::delete('/order-items/{id}', [OrderItemController::class, 'destroy'])->name('order-items.destroy');
 
-Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+Route::post('/customer/store', [CustomerController::class, 'store'])->name('customer.store');
+
+Route::get('/order/{order}', [OrderController::class, 'index'])->name('order.index');
