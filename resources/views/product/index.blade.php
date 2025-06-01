@@ -25,13 +25,12 @@
                 {{ strtoupper($item) }}
             </a>
             @endforeach
-            
+        
             <!-- Keranjang -->
-
           <div class="cart-wrapper position-relative ms-3">
     <a href="{{ route('keranjang') }}" class="btn btn-light position-relative">
         <i class="fa-solid fa-cart-shopping fa-3x" style="color: #000000;"></i>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count" style="display: none;">
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count" style="display: none; font-size: 1rem; padding: 6px 8px;" style="display: none;">
             0
         </span>
     </a>
