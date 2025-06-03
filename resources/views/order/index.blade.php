@@ -81,11 +81,14 @@
 
 <!-- Tombol Bayar Sekarang -->
 <div class="d-flex justify-content-center mb-5">
-    @if ($order->status === 'pending')
-        <a href="#" class="btn btn-primary btn-lg">Bayar Sekarang</a>
-    @else
-        <button class="btn btn-success" disabled>Sudah Dibayar</button>
-    @endif
+        @if ($order->status === 'pending')
+            <a href="#" class="btn btn-lg" style="background-color: #0077B6; color: white; border-color: #0077B6;">
+                Bayar Sekarang
+            </a>
+        @else
+            <button class="btn btn-success" disabled>Sudah Dibayar</button>
+        @endif
+    </div>
 </div>
 
 </div>
