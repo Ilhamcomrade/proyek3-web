@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ExpenseController;
+use App\Http\Controllers\Api\GoogleAuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -19,14 +20,10 @@ Route::get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'index']);
 Route::post('/register', [AuthController::class, 'store']);
 
-// ✅ Produk bisa dilihat tanpa login
-Route::apiResource('products', ProductController::class)->only(['index', 'show']);
-
 // Protected route (butuh login)
 Route::middleware('auth:sanctum')->group(function () {
     // Products (hanya create, update, delete yang butuh login)
     Route::apiResource('products', ProductController::class)->except(['index', 'show']);
-
     // Customers
     Route::apiResource('customers', CustomerController::class);
     // Orders
@@ -41,4 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('expenses', ExpenseController::class);
     // Logout
     Route::post('/logout', [AuthController::class, 'destroy']);
+    // Google login
+    Route::post('/auth/google-login', [AuthController::class, 'googleLogin']);
+    
+    Route::get('/protected-data', function () {
+        return response()->json(['message' => 'Berhasil akses API yang butuh token']);
+    });
 });

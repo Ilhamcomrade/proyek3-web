@@ -7,9 +7,59 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Google_Client;
+
+class GoogleAuthController extends Controller
+{
+    public function googleLogin(Request $request)
+    {
+        $idToken = $request->idToken;
+
+        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $payload = $client->verifyIdToken($idToken);
+
+        if ($payload) {
+            $email = $payload['email'];
+
+            $user = User::firstOrCreate(
+                ['email' => $email],
+                ['name' => $payload['name']]
+            );
+
+            $token = $user->createToken('google_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ]);
+        } else {
+            return response()->json(['error' => 'Invalid Google token'], 401);
+        }
+    }
+}
 
 class AuthController extends Controller
 {
+    public function loginGoogle(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'name' => 'required'
+        ]);
+
+        $user = User::firstOrCreate(
+            ['email' => $request->email],
+            ['name' => $request->name]
+        );
+
+        $token = $user->createToken('kasir_kuliner_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -23,7 +73,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'user' => $user,
-                'token' => $token, // Kirim token ke frontend
+                'token' => $token,
                 'message' => 'Login berhasil',
             ]);
         }
@@ -82,9 +132,9 @@ class AuthController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        $id->user()->currentAccessToken()->delete();
+        $request->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Logout berhasil'
         ]);
