@@ -85,10 +85,11 @@
                 <input type="number" name="number_customers" class="form-control" placeholder="Jumlah Pelanggan" required>
             </div>
         </div>
-   
-      <button type="submit" class="btn btn-lg" style="background-color: #0077B6; color: white; border-color: #0077B6;">
-        Pesan Sekarang
-    </button>
+           
+        <div class="d-flex justify-content-center mb-5">
+        <button type="submit" class="btn btn-lg" style="background-color: #0077B6; color: white; border-color: #0077B6;">
+        Pesan Sekarang</button>
+        </div>
 </div>
         
 </form>

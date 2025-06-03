@@ -72,12 +72,13 @@
     </div>
 
     <!-- Status Pesanan -->
-<div class="my-3 text-center">
-    <div class="p-2 rounded-pill bg-light border border-primary d-inline-block">
-        <strong>Status Pesanan Anda:</strong> 
-        <span class="text-primary">{{ ucfirst($order->status) }}</span>
+  <div class="my-4">
+        <div class="bg-info bg-opacity-25 border border-info py-2 rounded-pill w-100 d-flex justify-content-start ps-4">
+            <span class="fw-bold" style="color: #4f4f4f;">
+                Status Pesanan Anda: {{ ucfirst($order->status) }}
+            </span>
+        </div>
     </div>
-</div>
 
 <!-- Tombol Bayar Sekarang -->
 <div class="d-flex justify-content-center mb-5">
