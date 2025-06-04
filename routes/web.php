@@ -6,6 +6,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\PaymentController;
+
 
 Route::get('/', [ProductViewController::class, 'index']);
 
@@ -26,3 +28,4 @@ Route::post('/customer/store', [CustomerController::class, 'store'])->name('cust
 Route::get('/order/{order}', [OrderController::class, 'index'])->name('order.index');
 
 Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+Route::get('/pembayaran/cash/{orderId}', [PaymentController::class, 'showCash'])->name('pembayaran.cash');

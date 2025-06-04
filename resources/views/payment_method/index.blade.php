@@ -11,10 +11,10 @@
 
           <!-- Bayar Langsung -->
           <div class="col-4 text-center mb-3">
-            <a href="{{ url('/pembayaran/cash') }}" class="btn w-100 border border-dark" style="border-width: 2px;">
-              <img src="{{ asset('image/Gambar Uang.png') }}" alt="Cash" width="70" height="70"><br>
-              <small class="text-dark fw-bold">Cash</small>
-            </a>
+            <a href="{{ url('/pembayaran/cash/' . $order->id) }}" class="btn w-100 border border-dark" style="border-width: 2px;">
+    <img src="{{ asset('image/Gambar Uang.png') }}" alt="Cash" width="70" height="70"><br>
+    <small class="text-dark fw-bold">Cash</small>
+</a>
           </div>
 
           <!-- Dana -->
