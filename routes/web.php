@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentMethodController;
 
 Route::get('/', [ProductViewController::class, 'index']);
 
@@ -23,3 +24,5 @@ Route::delete('/order-items/{id}', [OrderItemController::class, 'destroy'])->nam
 Route::post('/customer/store', [CustomerController::class, 'store'])->name('customer.store');
 
 Route::get('/order/{order}', [OrderController::class, 'index'])->name('order.index');
+
+Route::get('/payment-methods', [PaymentMethodController::class, 'index']);

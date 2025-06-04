@@ -13,6 +13,7 @@
     </div>
 </div>
 
+@include('payment_method.index')
 @section('content')
 <div class="container py-4">
       <div class="text-center mb-4">
@@ -82,14 +83,15 @@
 
 <!-- Tombol Bayar Sekarang -->
 <div class="d-flex justify-content-center mb-5">
-        @if ($order->status === 'pending')
-            <a href="#" class="btn btn-lg" style="background-color: #0077B6; color: white; border-color: #0077B6;">
-                Bayar Sekarang
-            </a>
-        @else
-            <button class="btn btn-success" disabled>Sudah Dibayar</button>
-        @endif
-    </div>
+    @if ($order->status === 'pending')
+        <a href="#" class="btn btn-lg"
+           data-bs-toggle="modal" data-bs-target="#paymentModal"
+           style="background-color: #0077B6; color: white; border-color: #0077B6;">
+            Bayar Sekarang
+        </a>
+    @else
+        <button class="btn btn-success" disabled>Sudah Dibayar</button>
+    @endif
 </div>
 
 </div>
